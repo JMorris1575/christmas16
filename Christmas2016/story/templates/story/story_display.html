@@ -1,0 +1,33 @@
+{% extends parent_template|default:"gifts/base_gifts.html" %}
+{% load static %}
+
+{{ block.super }}
+
+{% block content %}
+
+    <div class="info">
+        <p>
+            Here is the current version of the Christmas story the family is writing. Add the next part of the story by
+            clicking the "Add to Story" button. It is possible, although not entirely likely, that the story will branch
+            into several versions. If so, you can see, and add to, the different branches of the story by clicking on
+            each of their links.
+        </p>
+    </div>
+
+    <div class="line-grey"></div>
+
+    <ul class="menu form-left">
+        {% for branch in all_branches %}
+            <li class="menu-list-item left">
+                <a class="menu-item no-underline" href="{% url 'display_story' branch.branch_number %}">
+                    Branch {{ branch.branch_number }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <div class="content">
+        <p class="form-left">This page will display the family Christmas story for this year.</p>
+    </div>
+
+{% endblock %}

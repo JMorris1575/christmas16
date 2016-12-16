@@ -12,5 +12,5 @@ class Memory(models.Model, AuthorMixin):
         return self.post
 
     def author_display(self):
-        return 'Christmas Memory from ' + self.author(self.user) + ": "
+        return 'Christmas Memory from ' + self.author_name(self.user) + ": "
 

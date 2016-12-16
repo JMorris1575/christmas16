@@ -35,5 +35,5 @@ class Response(models.Model, AuthorMixin):
         return self.response
 
     def display(self):
-        prefix = self.author(self.responder) + " says: "
+        prefix = self.author_name(self.responder) + " says: "
         return prefix + self.response

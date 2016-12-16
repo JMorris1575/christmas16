@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.views.generic import View
 from django.contrib.auth import PermissionDenied
 
-from story.models import Story
+from story.models import Story, Branch
 from user.models import UserProfile
 from user.decorators import class_login_required
 
@@ -11,35 +11,42 @@ import utils
 
 @class_login_required
 class StoryDisplay(View):
-    template_name = 'story/story.html'
+    template_name = 'story/story_display.html'
 
-    def get(self, request):
+    def get(self, request, branch_number=None):
+        try:
+            Branch.objects.get(branch_number=branch_number)
+        except:
+            raise PermissionDenied
+
+
         return render(request, self.template_name,
-                      { 'display_memory': utils.get_memory })
+                      { 'display_memory': utils.get_memory,
+                        'all_branches': Branch.objects.all(),})
 
 
 @class_login_required
 class StoryAdd(View):
     template_name = 'story/story_add.html'
 
-    def get(self, request):
+    def get(self, request, branch_number=None, previous=None):
         return render(request, self.template_name,
                       { 'display_memory': utils.get_memory})
 
     def post(self, request):
-        # add to database
-        return redirect('display_story')
+        return redirect('story_check')
 
 
 @class_login_required
-class StoryEdit(View):
-    template_name = 'story/story_edit.html'
+class StoryCheck(View):
+    template_name = 'story/story_check.html'
 
-    def get(self, request, entry_number=None):
+    def get(self, request, branch_number=None, previous=None):
         return render(request, self.template_name,
-                      {'entry_number': entry_number,
+                      {'branch_number': branch_number,
+                       'previous': previous,
                        'display_memory': utils.get_memory})
 
     def post(self, request, entry_number=None):
         # make changes in database if this is the right user
-        return redirect('display_story')
+        return redirect('story_display')

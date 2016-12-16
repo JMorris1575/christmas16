@@ -1,6 +1,6 @@
 class AuthorMixin():
 
-    def author(self, user):
+    def author_name(self, user):
         name = user.first_name
         if name == 'Brian':
             name += ' ' + user.last_name
