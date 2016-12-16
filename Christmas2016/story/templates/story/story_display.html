@@ -19,19 +19,35 @@
     <ul class="menu form-left">
         {% for branch in all_branches %}
             <li class="menu-list-item left">
-                <a class="menu-item no-underline" href="{% url 'display_story' branch.branch_number %}">
-                    Branch {{ branch.branch_number }}
-                </a>
+                {% if branch.branch_number == forloop.counter %}
+                    <a class="selected-menu-item" href="{% url 'display_story' branch.branch_number %}">
+                        Branch {{ branch.branch_number }}
+                    </a>
+                {% else %}
+                    <a class="menu-item" href="{% url 'display_story' branch.branch_number %}">
+                        Branch {{ branch.branch_number }}
+                    </a>
+                {% endif %}
             </li>
         {% endfor %}
     </ul>
 
     <div class="content">
-        <p class="form-left">
+        <div class="form-left">
             {% for entry in entries %}
-                entry.entry
+                <div class="container-story">
+                    <div class="name-col">
+                        <p>{{ entry.get_author }}:</p>
+                    </div>
+                    <div class="text-col story-line">
+                        <p>{{ entry.entry }}</p>
+                    </div>
+                </div>
             {% endfor %}
-        </p>
+            <span class="right-col">
+                <button>Add to Story</button>
+            </span>
+        </div>
     </div>
 
 {% endblock %}

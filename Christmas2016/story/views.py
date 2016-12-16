@@ -19,8 +19,7 @@ class StoryDisplay(View):
         except:
             raise PermissionDenied
         entry_list = branch.as_list()
-        # figure out how to get the entries based on what's in the entry_list
-        entries = Story.objects.all()
+        entries = Story.objects.filter(pk__in=entry_list)
 
         return render(request, self.template_name,
                       { 'display_memory': utils.get_memory,

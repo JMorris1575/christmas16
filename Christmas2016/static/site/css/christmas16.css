@@ -38,6 +38,10 @@ header {
     border-bottom: 1px solid lightgray;
     }
 
+main {
+    margin-bottom: 30px;
+    }
+
 a.no-underline {
     text-decoration: none;
     }
@@ -45,6 +49,12 @@ a.no-underline {
 a.menu-item {
     color: #208020;
     text-decoration: none;
+    }
+
+a.selected-menu-item {
+    color: #208020;
+    text-decoration: none;
+    border: 2px solid red;
     }
 
 p.no-p-height {
@@ -86,11 +96,19 @@ p.no-p-height {
 
 .container {
     width: auto;
-    height: auto;
     padding: 10px 10px 10px 10px;
     overflow: auto;
     border-bottom: 2px solid red;
     margin: 0px 10px 0px 10px;
+    }
+
+.container-story {
+    width: auto;
+    height: auto;
+    padding: 0px;
+    overflow: auto;
+    border-bottom: 1px solid grey;
+    margin: 5px;
     }
 
 .header-container {
@@ -109,6 +127,7 @@ p.no-p-height {
     }
 
 .content {
+    margin-bottom: 10px;
     border-top: 1px solid lightgray;
     border-bottom: 1px solid lightgray;
     }
@@ -228,6 +247,13 @@ p.no-p-height {
     font-weight: bold;
     }
 
+.name-col {
+    float: left;
+    width: 150px;
+    color: #208020;
+    font-size: 150%;
+    }
+
 .question {
     color: #208020;
     }
@@ -263,6 +289,11 @@ p.no-p-height {
     font-family: arial, sans-serif;
     font-size: medium;
     padding-top: 5px;
+    }
+
+.story-line {
+    color: blue;
+    font-size: 120%;
     }
 
 .text-col {
