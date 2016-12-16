@@ -15,14 +15,17 @@ class StoryDisplay(View):
 
     def get(self, request, branch_number=None):
         try:
-            Branch.objects.get(branch_number=branch_number)
+            branch = Branch.objects.get(branch_number=branch_number)
         except:
             raise PermissionDenied
-
+        entry_list = branch.as_list()
+        # figure out how to get the entries based on what's in the entry_list
+        entries = Story.objects.all()
 
         return render(request, self.template_name,
                       { 'display_memory': utils.get_memory,
-                        'all_branches': Branch.objects.all(),})
+                        'all_branches': Branch.objects.all(),
+                        'entries': entries,})
 
 
 @class_login_required

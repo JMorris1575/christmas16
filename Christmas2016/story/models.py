@@ -31,10 +31,10 @@ class Branch(models.Model):
         return self.sequence
 
     def as_list(self):
-        str_list = self.sequence.split
+        str_list = self.sequence.split()
         num_list = []
-        for str in str_list:
-            num_list.append(int(str))
+        for num_str in str_list:
+            num_list.append(int(num_str))
         return num_list
 
     def check_entry(self, previous):

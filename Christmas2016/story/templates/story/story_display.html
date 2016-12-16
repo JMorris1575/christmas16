@@ -27,7 +27,11 @@
     </ul>
 
     <div class="content">
-        <p class="form-left">This page will display the family Christmas story for this year.</p>
+        <p class="form-left">
+            {% for entry in entries %}
+                entry.entry
+            {% endfor %}
+        </p>
     </div>
 
 {% endblock %}
