@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.views.generic import View
 from django.contrib.auth import PermissionDenied
 
-from story.models import Story, Branch
+from story.models import StoryLine, Branch
 from user.models import UserProfile
 from user.decorators import class_login_required
 
@@ -20,7 +20,7 @@ class StoryDisplay(View):
             raise PermissionDenied
         entry_list = branch.as_list()
         # figure out how to get the entries based on what's in the entry_list
-        entries = Story.objects.all()
+        entries = StoryLine.objects.all()
 
         return render(request, self.template_name,
                       { 'display_memory': utils.get_memory,

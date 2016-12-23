@@ -1495,9 +1495,13 @@ query:  ``profile = UserProfile.objects.get(user=request.user)``.  Time to study
 I experimented in ``manage.py shell`` and found that the following sequence of commands added a UserProfile for 'Jim':
 
 ``from django.contrib.auth.models import User``
+
 ``from user.models import UserProfile``
+
 ``jim = User.objects.gt(username='Jim')``
+
 ``profiles = UserProfile(user=jim)``
+
 ``profiles.save()``
 
 I wrote a program intending to use it to create UserProfiles for each user as follows::
@@ -1557,13 +1561,17 @@ Then fill in the resulting file with::
 
 This didn't work. It threw a ``ValueError: Cannot assign "<User: Matt>": "UserProfile.user" must be a "User" instance.``
 
+.. _connecting_userprofile_to_user_label
+
 He is, but I couldn't figure out how to convince it. Just to get on with it I will connect the Users to the UserProfiles
 manually -- ugh! I did this by temporarily copy and pasting all the usernames here (from running a quick program in
 ``manage.py shell``, then eventually learned that, after importing the User and UserProfile models I could repeat the
 following statements with each of the different names in the first line:
 
 ``user = User.objects.get(username='Matt')``
+
 ``profile = UserProfile(user=user)``
+
 ``profile.save()``
 
 Now, will the Select buttons be shown correctly?
@@ -2208,22 +2216,36 @@ Second New Branch: ``1, 2, 3, 4, 7,``
 From then on the story branches would be displayed on separate pages and clicking the ``Add to Story`` button on a
 branch's page adds to that branch.
 
-Thinking through the details, when two users have accessed the ``/view_story/1/`` page and have both pressed
-``Add to Story`` and been delivered to a ``/story/1/edit/4/`` page.  User 1 has clicked ``Save`` and the ``post`` method
-of the view checks to see whether anyone else has already responded to line 4 (by checking the ``Story`` model's entries
-for any containing line 4 - the line being continued). Finding no entries already there the ``post`` method creates a
-new entry in the ``Story`` model and saves it. Now User 2 clicks ``Save`` and the ``post`` method DOES find a previous
-entry responding to line 4. It checks through all the existing branches to see if any have "4" as their final entry and
-none of them do so it creates a new branch by copying all of the entries so far and saving the new list to a new branch.
-Now it goes back to check the existing branches for one with a "4" as its final entry and finds the newly created
-branch. It creates and saves the new line to this newly created branch.
+Thinking through the details (for a second time - I deleted the first), when three users have accessed the
+``story/1/display/`` page and have pressed the ``Add to Story`` button in succession, they are sent to a
+``/story/1/add/4/`` page where '1' is the branch number they started on and '4' is the line to which they are
+responding.
 
-Now User 3 finally gets around to clicking ``Save`` and the process repeats, creating a third branch just as the second
-was created.
+When User 1 clicks "Save" first: the ``post`` method of the ``StoryAdd`` view and, since there is no conflict, the new
+line is added to the original branch. Branch 1 now looks like this: ``1, 2, 3, 4, 5, ``.
+
+When User 2 clicks "Save" after User 1: the system recognizes that Branch 1 already has a response to Line 4, so Branch
+2 is created by copying all of Branch 1's entries up to and including the entry for Line 4. The new line, Line 6, gets
+added to this branch.
+
+When User 3 clicks "Save" after User 2: the system recognizes that Branch 1 already has a response to Line 4 and creates
+Branch 3 by copying all of Branch 1's entries up to and including the entry for Line 4. The new line, Line 7, gets added
+to this branch. There is no difference in programming from the case for User 2.
+
+Thus, this seems like a good approach after any user clicks "Save"::
+
+    create a new line - setting ``branch`` to ``current_branch`` for now
+    if branch_number indicates there is already a response to the current line (4 in the example):
+        create a new branch based on an existing branch up to and including line 4's position
+        add the new line's pk to the new branch
+        change the new line's branch to the new branch
+    else:
+        add the new line to branch_number (1 in the example)
 
 Much of the logic, it seems can go into the model class perhaps with a ``check_entry(previous_line)`` method that
-returns either ``True`` or ``False`` depending on whether ``continued_line`` is the last entry; and a
-``create_branch(old_branch)`` method that creates a new branch from an ``old_branch`` and returns the branch number.
+returns ``True`` if ``previous_entry`` is the last entry or ``False`` otherwise; and a ``create_branch(previous_entry)``
+method that creates a new branch from the ``current_branch`` and returns the branch number for use in the creation of
+the new line.
 
 The display of the story could take place in a series of ``.story_line`` ``<div>``s with the author's name in the left
 column, the story line itself in the center column and the ``Add to Story`` button appearing only on the last one.
@@ -2235,7 +2257,6 @@ Here are the model definitions::
 
     Story
         story_line: TextField
-        branch_number: integer
         user: ForeignKey to User -- the one writing the story line
         previous: integer -- the pk of the previous Story entry
 
@@ -2297,4 +2318,38 @@ Planning the Implementation of the Story App
 
 #. Deploy!
 
+Updating the Story App's Model
+++++++++++++++++++++++++++++++
 
+As I approached implementing the site I discovered that my original plan for the Story model (which should probably be
+called the StoryLine model) included a field for branch_number. This does not make sense if one story line can be in
+several branches at once. Thus I deleted it and, while I was at it, changed the model's name to StoryLine, modified the
+Branch model accordingly, deleted the Story table from the database on this machine, and finally did a
+``makemigrations`` and a ``migrate``.
+
+In order to get it to work I had to get into pgAdmin III and delete both tables: story_story and story_branch, even
+though no changes were made to story_branch. By the way, I found these tables under::
+
+    Databases
+        c16database
+            Schemas
+                public
+                    Tables
+
+Now I have to remember to do the same thing on the rectory computer. But I notice I can't get to the story page. I
+wonder why not.
+
+It was because there was nothing in the Branch model yet. I added Branch 1, with sequence = "1 " (note, no comma), and
+after correcting an error in the template (which I think I had already corrected at the rectory) displayed properly.
+
+
+
+
+Adding New Users
+----------------
+
+Just before Christmas I added Scott's friend Jenny and her two children Aston and Harper to the website. Including them
+in secrets.json was easy enough, as was going into the online version of admin to enter them as users. I had to relearn
+how to connect users to user profiles as I did :ref:`above <connect_userprofile_to_user_label>`.
+
+Once that was done I could check to see if each could actually sign in and send Jenny some e-mails.

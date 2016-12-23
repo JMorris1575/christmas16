@@ -4,9 +4,8 @@ from django.conf import settings
 from model_mixins import AuthorMixin as AuthorMixin
 
 
-class Story(models.Model, AuthorMixin):
+class StoryLine(models.Model, AuthorMixin):
     entry = models.TextField()
-    branch_number = models.IntegerField()
     author = models.ForeignKey(settings.AUTH_USER_MODEL)
     previous_entry = models.IntegerField()
 
