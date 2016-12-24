@@ -2323,9 +2323,8 @@ Updating the Story App's Model
 
 As I approached implementing the site I discovered that my original plan for the Story model (which should probably be
 called the StoryLine model) included a field for branch_number. This does not make sense if one story line can be in
-several branches at once. Thus I deleted it and, while I was at it, changed the model's name to StoryLine, modified the
-Branch model accordingly, deleted the Story table from the database on this machine, and finally did a
-``makemigrations`` and a ``migrate``.
+several branches at once. Thus I deleted it and, while I was at it, changed the model's name to StoryLine, deleted the
+old Story table from the database on this machine, and finally did a ``makemigrations`` and a ``migrate``.
 
 In order to get it to work I had to get into pgAdmin III and delete both tables: story_story and story_branch, even
 though no changes were made to story_branch. By the way, I found these tables under::
@@ -2342,7 +2341,24 @@ wonder why not.
 It was because there was nothing in the Branch model yet. I added Branch 1, with sequence = "1 " (note, no comma), and
 after correcting an error in the template (which I think I had already corrected at the rectory) displayed properly.
 
+I tried to repeat the process on the rectory computer and had a great deal of difficulty. ``makemigrations`` would
+work as expected but ``migrate`` didn't find any migrations. So, after deleting ``story_story`` and ``story_branch`` in
+the local database, I could not create them anew with ``migrate``. I don't know why not. I finally managed to recreate
+them in **pgAdminIII** by:
 
+#. Copying the SQL instructions from the computer at home,
+
+#. Pasting them into pgAdminIII's SQL editor (if that's what they call it),
+
+#. Creating a couple of new sequences: ``story_storyline_id_seq`` and ``story_branch_id_sequence`` by right-clicking on
+   ``Sequences`` and selecting ``New Sequence...``,
+
+#. Then clicking on the "Play" button (actually "Execute query") to create each table
+
+I hate to think about what this might be like when changing the online database. Maybe not so bad if it doesn't already
+have any database entries for the story app. If it does, however, perhaps I should simply change the Story model's name
+to StoryLine and leave the old Story table in the database unused. Just let ``makemigrations`` and ``migrate`` do things
+in their own way.
 
 
 Adding New Users
